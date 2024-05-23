@@ -1,55 +1,61 @@
 package com.fatec.produto.ti_cop;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import com.fatec.produto.model.Produto;
-@DataJpaTest
 
 class Req01CadastrarProdutoTests {
 
-
     @Test
-    public void testSetId() {
-        Produto produto = new Produto();
-        produto.setId(1L);
-        assertEquals(1L, produto.getId());
-    }
-
-    @Test
-    public void testSetDescricaoValida() {
-        Produto produto = new Produto();
-        produto.setDescricao("Produto válido");
-        assertEquals("Produto válido", produto.getDescricao());
-    }
-
-    @Test
-    public void testSetDescricaoNula() {
-        Produto produto = new Produto();
+    void testDescricaoVazia() {
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            produto.setDescricao(null);
+            new Produto("", "Categoria válida", "22.30", "10");
         });
-        assertEquals("A descrição não deve estar em branco", exception.getMessage());
+
+        String expectedMessage = "A descrição não deve estar em branco";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
     }
 
     @Test
-    public void testSetDescricaoEmBranco() {
-        Produto produto = new Produto();
+    void testCategoriaVazia() {
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            produto.setDescricao("");
+            new Produto("Descrição válida", "", "22.30", "10");
         });
-        assertEquals("A descrição não deve estar em branco", exception.getMessage());
+
+        String expectedMessage = "A categoria não deve estar em branco";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
     }
 
     @Test
-    public void testSetCategoria() {
-        Produto produto = new Produto();
-        produto.setCategoria("Categoria válida");
-        assertEquals("Categoria válida", produto.getCategoria());
+    void testCustoInvalido() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            new Produto("Descrição válida", "Categoria válida", "-1", "10");
+        });
+
+        String expectedMessage = "O custo deve ser maior que zero";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
     }
 
+    @Test
+    void testQuantidadeInvalida() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            new Produto("Descrição válida", "Categoria válida", "22.30", "-1");
+        });
 
+        String expectedMessage = "A quantidade no estoque deve ser maior que zero";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
 }
